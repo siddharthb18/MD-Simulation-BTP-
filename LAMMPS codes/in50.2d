@@ -1,0 +1,43 @@
+dimension 2
+
+boundary p p p
+
+units        real
+
+atom_style   atomic
+
+read_data    read50.dat
+
+pair_style  buck 17.0
+
+pair_coeff * * 12000.0  0.273 0.0
+
+variable forcex atom -0.44107332*cos(1.847995678*x)
+
+variable forcey atom -0.44107332*cos(1.847995678*y)
+
+variable pot atom 0.238676*sin(1.847995678*x)+0.238676*sin(1.847995678*y)
+
+fix 4 all addforce v_forcex v_forcey 0.0 every 1 energy v_pot
+
+fix 1 all nvt temp 160 160 100
+
+fix 2 all enforce2d
+
+fix_modify 4 energy yes
+
+timestep  4.0
+
+compute 7 all pe/atom
+
+thermo 100
+
+thermo_style custom step temp pe ke etotal press vol 
+                                                                                                                              
+run 100000
+
+dump 6 all custom 100  Trajectory50  id xu yu zu vx vy vz fx fy fz c_7
+
+dump_modify 6 sort id
+
+run 500000
